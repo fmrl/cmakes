@@ -1,4 +1,4 @@
-# This file is part of the *fmrl.cmake* project at <http://fmrl.org>.
+# This file is part of the *cmakes* project at [fmrl][1].
 # Copyright (c) 2011, Michael Lowell Roberts.
 # All rights reserved. 
 #
@@ -27,9 +27,11 @@
 # PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+#
+# [1]: http://fmrl.org
 
-include(cmake/debug.cmake)
+include(cmakes/debug.cmake)
 
 if(NOT DEFINED generate_config_header)
 
@@ -47,11 +49,11 @@ function(generate_config_header NAMESPACE)
 	endforeach()
 
 	# to namespace header file substitutions, i use a two-pass
-	# subtitution method i encountered on the CMake mailing list.
-	# see <http://public.kitware.com/pipermail/cmake/2006-March/008685.html>.
+	# subtitution method i encountered on the CMake mailing list:
+	# http://public.kitware.com/pipermail/cmake/2006-March/008685.html
 	set(CMAKEDEFINE "#cmakedefine01")
 	set(TMPFILE "${CMAKE_CURRENT_BINARY_DIR}/tmp.fmrl.config/${NAMESPACE}/config.h.in")
-	configure_file(cmake/config.h.in ${TMPFILE} @ONLY)
+	configure_file(cmakes/config.h.in ${TMPFILE} @ONLY)
 	configure_file(${TMPFILE} ${CMAKE_CURRENT_BINARY_DIR}/include/${NAMESPACE}/config.h)
 
 endfunction()

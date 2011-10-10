@@ -1,4 +1,4 @@
-# This file is part of the *fmrl.cmake* project at <http://fmrl.org>.
+# This file is part of the *cmakes* project at [fmrl][1].
 # Copyright (c) 2011, Michael Lowell Roberts.
 # All rights reserved. 
 #
@@ -28,8 +28,10 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+#
+# [1]: http://fmrl.org
 
-include(cmake/config.cmake)
+include(cmakes/config.cmake)
 
 find_library(YAMLCPP_LIBRARY libyaml-cpp.a
 	HINTS "${YAMLCPP_PREFIX}"
