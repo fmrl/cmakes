@@ -31,23 +31,43 @@
 #
 # [1]: http://fmrl.org
 
-# find_boost(...)
-# ---------------
-# *find_boost(...)* invokes *find_package(Boost ...)*. the boost package
-# requires additional configuration that can be computed from exposed
-# options ('WANT_STATIC_LIBS') and requires additional definitions on certain
-# platforms.
-#
-# this function accepts all of the optional arguments that *find_package()* 
-# recognizes.
-#
-macro(find_boost)
-	set(Boost_USE_MULTITHREADED ${Threads_FOUND})
-	set(Boost_USE_STATIC_LIBS ${WANT_STATIC_LIBS})
-	find_package(Boost ${ARGN})
-	if(WIN32)
-		# i prefer to disable automatic linking on windows because
-		# it's not portable and tends to be a pain.
-		add_definitions(-DBOOST_ALL_NO_LIB)
+include(cmakes/config.cmake)
+
+find_library(YAMLCPP_LIBRARY libyaml-cpp.a
+	HINTS "${YAMLCPP_PREFIX}"
+	PATH_SUFFIXES lib
+	)
+
+if(YAMLCPP_LIBRARY)
+	if (NOT DEFINED YAMLCPP_PREFIX)
+		get_filename_component(YAMLCPP_PREFIX 
+			"${YAMLCPP_LIBRARY}" PATH)
+		# on platforms where multi-configuration builds are supported,
+		# the libraries are placed in the appropriate sub-directory of
+		# the 'lib" directory.
+		# [todo] i don't know if this is actually the case for 
+		# libyaml-cpp though.
+		# [todo] i want to cannonize this test into a function.
+		if("${CMAKE_CONFIGURATION_TYPES}")
+			get_filename_component(YAMLCPP_PREFIX 
+				"${YAMLCPP_PREFIX}/../.." ABSOLUTE)
+		else()
+			get_filename_component(YAMLCPP_PREFIX 
+				"${YAMLCPP_PREFIX}/.." ABSOLUTE)
+		endif()
 	endif()
-endmacro()
+
+	include_directories("${YAMLCPP_PREFIX}/include")
+
+	can_has(yamlcpp)
+	can_has(yaml)
+else()
+	message(WARNING 
+		"i could not find libyaml-cpp on your system. please specify the correct path using the YAMLCPP_PREFIX variable.")
+endif()
+
+
+
+
+
+

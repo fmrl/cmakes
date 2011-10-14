@@ -31,23 +31,44 @@
 #
 # [1]: http://fmrl.org
 
-# find_boost(...)
-# ---------------
-# *find_boost(...)* invokes *find_package(Boost ...)*. the boost package
-# requires additional configuration that can be computed from exposed
-# options ('WANT_STATIC_LIBS') and requires additional definitions on certain
-# platforms.
-#
-# this function accepts all of the optional arguments that *find_package()* 
-# recognizes.
-#
-macro(find_boost)
-	set(Boost_USE_MULTITHREADED ${Threads_FOUND})
-	set(Boost_USE_STATIC_LIBS ${WANT_STATIC_LIBS})
-	find_package(Boost ${ARGN})
-	if(WIN32)
-		# i prefer to disable automatic linking on windows because
-		# it's not portable and tends to be a pain.
-		add_definitions(-DBOOST_ALL_NO_LIB)
-	endif()
-endmacro()
+include(cmakes/debug.cmake)
+
+if(NOT DEFINED generate_config_header)
+
+function(generate_config_header NAMESPACE)
+
+	string(TOUPPER ${NAMESPACE} CAN_HAS_NAMESPACE)
+
+	# CAN_HAS contains information about which feature macros
+	# we can generate.
+	foreach(I ${CAN_HAS})
+		string(TOUPPER ${I} S) 
+		set(S ${CAN_HAS_NAMESPACE}_CAN_HAS_${S})
+		set(${S} YES)
+		debug_message("#define ${S} 1")
+	endforeach()
+
+	# to namespace header file substitutions, i use a two-pass
+	# subtitution method i encountered on the CMake mailing list:
+	# http://public.kitware.com/pipermail/cmake/2006-March/008685.html
+	set(CMAKEDEFINE "#cmakedefine01")
+	set(TMPFILE "${CMAKE_CURRENT_BINARY_DIR}/tmp.fmrl.config/${NAMESPACE}/config.h.in")
+	configure_file(cmakes/config.h.in ${TMPFILE} @ONLY)
+	configure_file(${TMPFILE} ${CMAKE_CURRENT_BINARY_DIR}/include/${NAMESPACE}/config.h)
+
+endfunction()
+
+function(can_has FEATURE)
+	list(APPEND CAN_HAS ${FEATURE})
+	set(CAN_HAS ${CAN_HAS} PARENT_SCOPE)
+endfunction()
+
+endif()
+
+
+
+
+
+
+
+
