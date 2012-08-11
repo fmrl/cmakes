@@ -1,4 +1,4 @@
-Copyright (c) 2011, Michael Lowell Roberts.  
+Copyright (c) 2011-2012, Michael Lowell Roberts.  
 All rights reserved. 
 
 Redistribution and use in source and binary forms, with or without 
