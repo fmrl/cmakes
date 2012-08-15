@@ -30,28 +30,50 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # 
-# ,$ 
+# ,$
 
-# find_boost(...)
-# ---------------
-# *find_boost(...)* invokes *find_package(Boost ...)*. the boost package
-# requires additional configuration that can be computed from exposed
-# options ('WANT_STATIC_LIBS') and requires additional definitions on certain
-# platforms.
-#
-# this function accepts all of the optional arguments that *find_package()* 
-# recognizes.
-#
-macro(find_boost)
-	set(Boost_USE_MULTITHREADED ${Threads_FOUND})
-	set(Boost_USE_STATIC_LIBS ${WANT_STATIC_LIBS})
-	find_package(Boost ${ARGN})
-	if(WIN32)
-		# i prefer to disable automatic linking on windows because
-		# it's not portable and tends to be a pain.
-		add_definitions(-DBOOST_ALL_NO_LIB)
+include(cmakes/config.cmake)
+include(cmakes/yaml-cpp.cmake)
+
+find_library(
+	NYAN_LIBRARY libnyan.a
+	HINTS "${NYAN_PREFIX}"
+	PATH_SUFFIXES lib)
+
+if(NYAN_LIBRARY)
+	if (NOT DEFINED NYAN_PREFIX)
+		get_filename_component(NYAN_PREFIX 
+			"${NYAN_LIBRARY}" PATH)
+		# on platforms where multi-configuration builds are supported,
+		# the libraries are placed in the appropriate sub-directory of
+		# the 'lib" directory.
+		# [todo] i don't know if this is actually the case for 
+		# libyaml-cpp though.
+		# [todo] i want to cannonize this test into a function.
+		if("${CMAKE_CONFIGURATION_TYPES}")
+			get_filename_component(NYAN_PREFIX 
+				"${NYAN_PREFIX}/../.." ABSOLUTE)
+		else()
+			get_filename_component(NYAN_PREFIX 
+				"${NYAN_PREFIX}/.." ABSOLUTE)
+		endif()
 	endif()
-endmacro()
 
-# $vim:23: vim:set sts=3 sw=3 et:,$ 
+	# [mlr][todo] boost should be included in this.
+	set(NYAN_INCLUDE "${NYAN_PREFIX}/include" ${YAMLCPP_INCLUDE})
+	set(NYAN_LIBRARIES ${NYAN_LIBRARY} ${YAMLCPP_LIBRARIES})
+	include_directories(${NYAN_INCLUDE})
+
+	can_has(nyan)
+else()
+	message(WARNING 
+		"i could not find libnyan on your system. please specify the correct path using the NYAN_PREFIX variable.")
+endif()
+
+# $vim:23: vim:set sts=3 sw=3 et:,$
+
+
+
+
+
 
