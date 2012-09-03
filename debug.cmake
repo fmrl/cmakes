@@ -31,19 +31,17 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # 
 # ,$
-option(WANT_DEBUG_CMAKE 
-	"select this option if you would like to see extra logging from the CMake scripts."
-	NO)
-mark_as_advanced(WANT_DEBUG_CMAKE)
+option(WANT_DEBUG_CMAKES
+   "select this option if you would like to see extra logging from the CMake scripts."
+   NO)
+mark_as_advanced(WANT_DEBUG_CMAKES)
 
 if(NOT DEFINED debug_message)
-
-macro(debug_message)
-	if(WANT_DEBUG_CMAKE)
-		message(STATUS "${ARGN}")
-	endif()
-endmacro()
-
+   macro(debug_message)
+      if(WANT_DEBUG_CMAKES)
+         message(STATUS "${ARGN}")
+      endif()
+   endmacro()
 endif()
 
 # $vim:23: vim:set sts=3 sw=3 et:,$
