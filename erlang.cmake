@@ -121,13 +121,25 @@ if(ERLANG_FOUND)
       ${ERLANG_ERL_INTERFACE_LIBRARY_${FLAVOR}})
    message("erlang.cmake: i found erlang.")
    can_has(erlang)
-   # erlang C interface libraries require __WIN32__ to be defined for
-   # windows platforms.
+   # [mlr] erlang C interface libraries require __WIN32__ to be defined
+   # for windows platforms. also, the symbol `erl_errno` doesn't appear
+   # to link unless the preprocessor symbol `_REENTRANT` is defined.
    if(WIN32)
-      set(ERLANG_CFLAGS "/D__WIN32__" PARENT_SCOPE)
+      set(ERLANG_DEFINITIONS "/D__WIN32__ /D_REENTRANT")
+   else()
+      if(Threads_FOUND)
+         set(ERLANG_DEFINITIONS "-D_REENTRANT")
+      endif()
    endif()
+   debug_message(
+      "erlang.cmake: ERLANG_DEFINITIONS=${ERLANG_DEFINITIONS}")
+   # [mlr][todo] do i want to offer the option to disable the following
+   # step?
+   add_definitions(${ERLANG_DEFINITIONS})
+   # [mlr] the ordering of the libraries is important to avoid link
+   # errors.
    set(ERLANG_LIBRARIES 
-      ${ERLANG_EI_LIBRARY} ${ERLANG_ERL_INTERFACE_LIBRARY})
+      ${ERLANG_ERL_INTERFACE_LIBRARY} ${ERLANG_EI_LIBRARY})
    set(ERLANG_INCLUDE "${ERLANG_FFI_PREFIX}/include")
    debug_message(
       "erlang.cmake: ERLANG_INCLUDE=${ERLANG_INCLUDE}")
